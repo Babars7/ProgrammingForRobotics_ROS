@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="use_sim_time" default="true"/>
+	<arg name="world" default="singlePillar"/>
+	<arg name="debug" default="false"/>
+	<arg name="physics" default="ode"/>
+	
+	<group if="$(arg use_sim_time)">
+	 <param name="/use_sim_time" value="true" />
+	</group>
+	
+	<include file="/home/valentin/Documents/catkin_ws/src/smb_common_v2/smb_gazebo/launch/smb_gazebo.launch">
+		<arg name="world_file" value="/home/valentin/Documents/catkin_ws/src/smb_highlevel_controller/worlds/singlePillar.world"/>
+		<arg name="debug" value="$(arg debug)"/>
+		<arg name="laser_enabled" value="true"/>
+		
+	</include>
+	
+	  <node pkg="smb_highlevel_controller" type="smb_highlevel_controller" 
+		name="smb_highlevel_controller" output="screen">
+		<rosparam command="load" file="/home/valentin/Documents/catkin_ws/config/config.yaml"/>
+	</node>
+	
+	<node pkg="rviz" type="rviz" name="rviz">
+	</node>
+	
+</launch>

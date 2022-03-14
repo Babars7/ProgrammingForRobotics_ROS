@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/valentin/Documents/catkin_ws/devel/.private/smb_control/setup.sh

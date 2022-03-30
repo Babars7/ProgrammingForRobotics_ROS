@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- Arguments, reference: control.launch file from husky_control package-->
+	<!-- <arg name="laser_enabled" default="$(optenv SMB_LMS1XX_ENABLED true)"/> Set to true -->
+	<!-- <arg name="kinect_enabled" default="$(optenv SMB_KINECT_ENABLED false)"/>
+	<arg name="urdf_extras" default="$(optenv SMB_URDF_EXTRAS)"/> -->
+    <arg name="robot_description"  	default="robot_description"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="description_file"    default="/home/valentin/Documents/catkin_ws/src/smb_common_v2/smb_description/urdf/smb_standalone.urdf.xacro"/>
+
+	<!-- Reference: description.launch file -->
+	
+
+	<group if="$(arg use_sim_time)">
+	 <param name="/use_sim_time" value="true" />
+	</group>
+
+	
+
+	<!-- STATE PUBLISHER -->
+
+    <!-- Load robot description -->
+    <!-- Load robot description for gazebo -->
+  <include file="/home/valentin/Documents/catkin_ws/src/smb_common_v2/smb_description/launch/load.launch">
+    <arg name="simulation"       value="true"/>
+    <arg name="description_name" value="$(arg robot_description)"/>
+    <arg name="description_file" value="$(arg description_file)"/>
+    <arg name="wheel_joint_type" value="continuous"/>
+    <arg name="robot_namespace"  value=""/>
+  </include>
+
+    <node name="smb_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+        <param name="publish_frequency" value="50"/>
+        <param name="use_tf_static"     value="true"/>
+        <remap from="robot_description" to="robot_description"/>
+    </node>
+
+
+    <!-- <node pkg="smb_highlevel_controller" type="smb_highlevel_controller" 
+		name="smb_highlevel_controller" output="screen">
+		<rosparam command="load" file="/home/valentin/Documents/catkin_ws/config/config.yaml"/>
+	</node> -->
+
+	<!-- EKF -->
+	<node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+		<rosparam command="load"
+		    file="$(find smb_control)/config/localization.yaml"/>
+	</node>
+
+    <node pkg="tf" type="static_transform_publisher" name="smb_top_view" args="0 0 2 0 0 0 1 base_link link1 100" />
+
+    <!-- RVIZ -->
+	<node pkg="rviz" type="rviz" name="rviz">
+	</node>
+
+</launch>
